@@ -1,9 +1,22 @@
 package main
 
-// здесь надо написать код
+import (
+	"fmt"
+	"net/http"
+)
 
-func main() {
-	// и здесь тоже
+func handler(w http.ResponseWriter, r *http.Request) {
+	name := r.URL.Query().Get("name")
+	if name == "" {
+		http.Error(w, "Нет параметра", http.StatusBadRequest)
+		return
+	}
+	fmt.Fprintf(w, "Hello,%s!", name)
 }
-
-// и тут тоже (если очень надо)
+func main() {
+	http.HandleFunc("/api/user", handler)
+	err := http.ListenAndServe(":9000", nil)
+	if err != nil {
+		fmt.Println("Ошибка запуска сервера", err)
+	}
+}
